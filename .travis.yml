@@ -34,7 +34,7 @@ deploy:
 jobs:
     include: 
     - stage: test_docker
-      #sudo: required
+      sudo: required
       #services: 
       #  - docker
 
