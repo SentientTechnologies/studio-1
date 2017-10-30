@@ -8,12 +8,6 @@ python:
 env:
   fast_finish: true
 
-sudo: required
-services: 
-    - docker
-
-before_install:
-    - docker pull peterzhokhoff/studioml
 
 install:
   - pip install -e .
@@ -35,3 +29,25 @@ deploy:
   password: $PYPI_PASSWORD
   on:
     tags: true
+
+
+jobs:
+    include: 
+    - stage: test_docker
+        sudo: required
+        services: 
+            - docker
+
+        env: 
+            - TEST_DOCKER=true
+
+        python: 
+            - "2.7"
+            - "3.6"
+
+        before_install:
+            - docker pull peterzhokhoff/studioml
+        
+        script: cd studio/tests && nosetests -v remote_worker_test --processes=16 --process-timeout=590
+
+ 
