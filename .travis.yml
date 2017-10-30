@@ -34,20 +34,20 @@ deploy:
 jobs:
     include: 
     - stage: test_docker
-        sudo: required
-        services: 
-            - docker
+      #sudo: required
+      #services: 
+      #  - docker
 
-        env: 
-            - TEST_DOCKER=true
+      #env: 
+      #  - TEST_DOCKER=true
 
-        python: 
-            - "2.7"
-            - "3.6"
+      #python: 
+      #  - "2.7"
+      #  - "3.6"
 
-        before_install:
-            - docker pull peterzhokhoff/studioml
+      #before_install:
+      #  - docker pull peterzhokhoff/studioml
         
-        script: cd studio/tests && nosetests -v remote_worker_test --processes=16 --process-timeout=590
+      script: cd studio/tests && nosetests -v remote_worker_test --processes=16 --process-timeout=590
 
  
