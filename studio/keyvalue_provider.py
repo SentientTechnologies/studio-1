@@ -130,11 +130,11 @@ class KeyValueProvider(object):
                   experiment.key,
                   experiment.time_added)
 
-        if experiment.project and userid:
-            self._set(self._get_projects_keybase() +
-                      experiment.project + "/" +
-                      experiment.key + "/owner",
-                      userid)
+        # if experiment.project and userid:
+        #    self._set(self._get_projects_keybase() +
+        #              experiment.project + "/" +
+        #              experiment.key + "/owner",
+        #              userid)
 
         self.checkpoint_experiment(experiment, blocking=True)
         self.logger.info("Added experiment " + experiment.key)
@@ -386,7 +386,7 @@ class KeyValueProvider(object):
         if user_ids:
             for user_id in user_ids:
                 retval[user_id] = {
-                    'email': self._get('users/' + user_id + '/email')
+                    'email': self._get('users/' + user_id + '/.email')
                 }
         return retval
 
@@ -416,8 +416,15 @@ class KeyValueProvider(object):
         else:
             return True
 
+    def can_read(self, path, user=None):
+        return True
+
+    def browse(self, path):
+        data = self._get(path, shallow=True)
+        return data
+
     def register_user(self, userid, email):
-        keypath = self._get_user_keybase(userid) + 'email'
+        keypath = self._get_user_keybase(userid) + '.email'
         existing_email = self._get(keypath)
         if existing_email != email:
             self._set(keypath, email)

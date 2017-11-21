@@ -1,6 +1,6 @@
 import time
 import sys
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, abort
 from . import model
 import argparse
 import yaml
@@ -10,6 +10,7 @@ import socket
 import subprocess
 import traceback
 import six
+import urllib
 
 import google.oauth2.id_token
 import google.auth.transport.requests
@@ -46,7 +47,8 @@ def projects():
 
 @app.route('/users')
 def users():
-    return _render('users.html')
+    return redirect('browse/users/')
+    # return _render('users.html')
 
 
 @app.route('/all')
@@ -67,6 +69,10 @@ def user_experiments(key):
 @app.route('/experiment/<key>')
 def experiment(key):
     return _render("experiment_details.html", experiment=key)
+
+@app.route('/browse/<path:key>/')
+def browse(key):
+    return _render("browse.html", path=key)
 
 
 @app.route('/tensorboard_exp/<key>')
@@ -427,6 +433,26 @@ def checkpoint_experiment():
                      .format(toc - tic))
 
     return json.dumps({'status': status, 'artifacts': artifacts})
+
+
+@app.route('/api/browse/<path:key>', methods=['POST', 'GET'])
+#@app.route('/api/browse')
+def api_browse(key):
+    tic = time.time()
+    userid = get_and_verify_user(request)
+    try:
+        if get_db().can_read(key, userid):
+            folder_contents = get_db().browse(key)
+            folder_contents = [p for p in folder_contents 
+                                if not p.startswith('.')]
+            return json.dumps(folder_contents)
+        else:   
+            getlogger().info('api/browse/{} request is not authorized'.format(path))
+            abort(403)
+    finally:
+        toc = time.time()
+        getlogger().info('browse request finished in {} s'.format(toc-tic))
+
 
 
 def _process_artifacts(experiment):

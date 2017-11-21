@@ -8,16 +8,19 @@
 
     <script>
         $(authWidget(function() {
-            reload(() => data_ajax('get_user_experiments'), fillExperimentTable)
+            //reload(() => data_ajax('get_user_experiments'), fillExperimentTable)
+            window.location.href  = 'browse/users/' + authWidget.uid + '/experiments/'
         }));
            
- 
+        /*
         function deleteAllExperiments() {
             if (confirm("This will delete ALL of your experiments and CANNOT be undone. Proceed?")) {
                     document.getElementById("deleteButton").innerHTML="<i class='fa fa-cog fa-spin'></i> Deleting..."
                     window.location.href = /delete_all/
             }
-        }
+        }*/
+   
+        
 
     </script>
 {% endblock %}

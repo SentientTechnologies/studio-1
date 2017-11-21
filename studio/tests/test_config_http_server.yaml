@@ -1,8 +1,9 @@
 database: 
     type: gs
     apiKey: AIzaSyCLQbp5X2B4SWzBw-sz9rUnGHNSdMl0Yx8
-    authDomain: "studio-ed756.firebaseapp.com"
+    authDomain: "{}.firebaseapp.com"
     bucket: "studioml-meta"
+    projectId: studio-ed756
 
 storage:
     type: gcloud

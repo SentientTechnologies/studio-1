@@ -34,9 +34,9 @@ class GSProvider(KeyValueProvider):
 
             retval = set({})
             for s in suffixes:
-                if s.endswith('/'):
-                    retval.add(s[:-1])
-                else:
+                # if s.endswith('/'):
+                #    retval.add(s[:-1])
+                # else:
                     retval.add(s)
 
             return retval

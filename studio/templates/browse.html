@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1 id=header>{{ path }}</h1>
+
+    {{ experimenttable() }}
+
+    <script>
+        $(authWidget(function() {
+            reload(() => get_data_ajax('browse/{{ path }}/'), fillExperimentTableList)
+        }));
+           
+    </script>
+{% endblock %}

@@ -81,21 +81,29 @@
                         style: "multi"
                     },
 
-                    "order":[[2, "desc"]],
+                    "order":[[0, "desc"]],
                     "paging":false,
                     "stateSave": true,
                     "columns": [
                         {
                             "title":"Key",
                             "render":function(data, type, row) {
-                                return '<a href="/experiment/' + data + '">' + data + '</a>' 
+                                if (data.endsWith('/')) {
+                                    return '<a href="' + escapeHtml(window.location.href + data) + '">' + data + '</a>' 
+                                } else {
+                                    return '<a href="/experiment/' + escapeHtml(data) + '">' + data + '</a>' 
+                                }
                             }  
                         },
                         {"title": "Script"},
                         {
                             "title":"Time added",
                             "render":function(data, type, row) {
-                                return new Date(data * 1000)
+                                if (data) {
+                                    return new Date(data * 1000)
+                                } else {
+                                    return ''
+                                }
                             }   
                         },
                         {"title":"Metric"},
@@ -105,7 +113,7 @@
                                 if (typeof data == 'number') {
                                     return data.toFixed(4);
                                 } else {
-                                    return 'None';
+                                    return '';
                                 }
                             }
                         },
@@ -115,7 +123,7 @@
                                 if (data) {
                                     return '<a href="/project/' + data + '">' + data + '</a>';
                                 } else {    
-                                    return 'None';
+                                    return ''
                                 }
                             }  
                         },
@@ -140,6 +148,19 @@
                     $('#buttonContainer').show()
                 }
             }
+            return response_data
+        }
+
+        function fillExperimentTableList(data, clearTable=true) {
+            response_data = JSON.parse(data)
+        
+            addExperimentsToTable(response_data, clearTable)
+            updateExperiments()
+            
+            if (response_data.length > 0) {
+                $('#buttonContainer').show()
+            }
+            
             return response_data
         }
 
@@ -258,6 +279,8 @@
 
             authWidget.userIdToken = null;
             authWidget.userRefreshToken = null;
+            authWidget.uid = null
+            authWidget.email = null
 
             // Firebase log-in
             function configureFirebaseLogin() {
@@ -271,6 +294,8 @@
                     $('#sign-in-button').hide()
                     user.getToken().then(function(idToken) {
                         authWidget.userIdToken = idToken;
+                        authWidget.uid = user.uid
+                        authWidget.email = user.email
 
                         {% if send_refresh_token %}
                             authWidget.userRefreshToken = user.refreshToken;
@@ -293,6 +318,8 @@
                         if (afterAuthCallback) {
                             authWidget.userIdToken = null;
                             authWidget.userRefreshToken = null;
+                            authWidget.uid = null;
+                            authWidget.email = null;
                             afterAuthCallback()
                         }
                     }
@@ -410,6 +437,35 @@
             )
         }
 
+        function get_data_ajax(apiMethod) {
+            /*if ( authWidget.userRefreshToken != null ) {
+                data["refreshToken"] = authWidget.userRefreshToken
+            }*/
+
+            console.log('Sending GET request to ' + apiMethod)
+            // console.log(data)
+
+            return $.ajax(
+                '/api/' + apiMethod,
+                {
+                    headers: {
+                        "Authorization": "Bearer " + authWidget.userIdToken
+                    },
+                    method: 'GET',
+                    // contentType:"application/json"
+                }
+            )
+        }
+
+        function escapeHtml(text) {
+            'use strict';
+            return text.replace(/[\"&'\/<>]/g, function (a) {
+                return {
+                    '"': '&quot;', '&': '&amp;', "'": '&#39;',
+                    '/': '&#47;',  '<': '&lt;',  '>': '&gt;'
+                }[a];
+            });
+        }
 
     </script>
   
