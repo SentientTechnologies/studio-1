@@ -37,6 +37,19 @@ class LocalWorkerTest(unittest.TestCase):
             ):
                 pass
 
+    def test_runner_local_config(self):
+        with get_local_queue_lock():
+            with stubtest_worker(
+                self,
+                experiment_name='test_runner_local_' + str(uuid.uuid4()),
+                runner_args=['--verbose=debug'],
+                config_name='test_config_local_provider.yaml',
+                test_script='tf_hello_world.py',
+                script_args=['arg0'],
+                expected_output='[ 2.  6.]'
+            ):
+                pass
+
     def test_args_conflict(self):
         with get_local_queue_lock():
             with stubtest_worker(

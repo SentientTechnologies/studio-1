@@ -131,6 +131,9 @@ class StorageProvider(KeyValueProvider):
         if not experiment_keys:
             experiment_keys = []
 
+        experiment_keys = [key for key in experiment_keys
+                           if not key.endswith('.data')]
+
         return experiment_keys
 
     def get_users(self):

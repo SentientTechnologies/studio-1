@@ -1,6 +1,7 @@
 import os
 import json
 
+
 from .util import timeit
 from .local_artifact_store import LocalArtifactStore
 from .storage_provider import StorageProvider
@@ -25,11 +26,16 @@ class LocalFilesProvider(StorageProvider):
         )
 
     @timeit
-    def _get(self, key):
-        with open(os.path.join(self.folder, key)) as f:
-            data = json.loads(f.read())
-
-        return data
+    def _get(self, key, shallow=False):
+        path = os.path.join(self.folder, key)
+        if os.path.isfile(path):
+            with open(path) as f:
+                data = json.loads(f.read())
+            return data
+        elif os.path.isdir(path) and shallow:
+            return os.listdir(path)
+        else:
+            raise NotImplementedError
 
     @timeit
     def _set(self, key, value):
