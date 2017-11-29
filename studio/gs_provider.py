@@ -37,7 +37,7 @@ class GSProvider(KeyValueProvider):
                 # if s.endswith('/'):
                 #    retval.add(s[:-1])
                 # else:
-                    retval.add(s)
+                retval.add(s)
 
             return retval
 

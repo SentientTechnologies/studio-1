@@ -67,17 +67,7 @@ class KeyValueProviderTest(object):
     def test_get_user_keybase(self):
         with self.get_provider() as fb:
             keybase = fb._get_user_keybase()
-            self.assertTrue(keybase == 'users/guest/')
-
-    def test_get_experiments_keybase(self):
-        with self.get_provider() as fb:
-            keybase = fb._get_experiments_keybase()
-            self.assertTrue(keybase == 'experiments/')
-
-    def test_get_projects_keybase(self):
-        with self.get_provider() as fb:
-            keybase = fb._get_projects_keybase()
-            self.assertTrue(keybase == 'projects/')
+            self.assertEquals(keybase, 'users/guest/')
 
     def test_add_experiment(self):
         with self.get_provider() as fb:
@@ -157,7 +147,8 @@ class KeyValueProviderTest(object):
             fb.add_experiment(experiment)
             fb.start_experiment(experiment)
 
-            file_in_modeldir = os.path.join(modeldir, str(uuid.uuid4()))
+            checkpoint_name = str(uuid.uuid4())
+            file_in_modeldir = os.path.join(modeldir, checkpoint_name)
             random_str = str(uuid.uuid4())
             with open(file_in_modeldir, 'w') as f:
                 f.write(random_str)
@@ -168,7 +159,7 @@ class KeyValueProviderTest(object):
                     t.join()
 
             shutil.rmtree(modeldir)
-            fb.store.get_artifact(
+            local_cache = fb.store.get_artifact(
                 fb.get_experiment(
                     experiment_name,
                     getinfo=False).artifacts['modeldir'])
@@ -235,6 +226,11 @@ class S3ProviderTest(unittest.TestCase, KeyValueProviderTest):
 class GSProviderTest(unittest.TestCase, KeyValueProviderTest):
     def get_default_config_name(self):
         return 'test_config_gs.yaml'
+
+
+class LocalStorageProviderTest(unittest.TestCase, KeyValueProviderTest):
+    def get_default_config_name(self):
+        return 'test_config_local_provider.yaml'
 
 
 if __name__ == "__main__":

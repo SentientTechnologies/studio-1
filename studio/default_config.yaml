@@ -1,6 +1,7 @@
 database:
     type: http
-    serverUrl: http://zoo.studio.ml
+    #serverUrl: http://zoo.studio.ml
+    serverUrl: localhost
     apiKey: AIzaSyCLQbp5X2B4SWzBw-sz9rUnGHNSdMl0Yx8
     authDomain: "studio-ed756.firebaseapp.com"
     projectId: "studio-ed756"

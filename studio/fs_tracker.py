@@ -10,6 +10,7 @@ import six
 STUDIOML_EXPERIMENT = 'STUDIOML_EXPERIMENT'
 STUDIOML_HOME = 'STUDIOML_HOME'
 STUDIOML_ARTIFACT_MAPPING = 'STUDIOML_ARTIFACT_MAPPING'
+STUDIOML_USER = 'STUDIOML_USER'
 
 
 def get_experiment_key():
@@ -83,6 +84,7 @@ def get_model_directory(experiment_name=None):
 def get_artifact_cache(tag, experiment_name=None):
     assert tag is not None
 
+    '''
     if tag.startswith('experiments/'):
         experiment_name = re.sub(
             '\Aexperiments/',
@@ -91,23 +93,29 @@ def get_artifact_cache(tag, experiment_name=None):
                 '/[^/]*\Z',
                 '',
                 tag))
-        tag = re.sub('\.tar\.?[^\.]*\Z', '', re.sub('.*/', '', tag))
+    '''
 
-    if tag.startswith('blobstore/'):
-        return get_blob_cache(tag)
+    tag = re.sub('\.tar\.?[^\.]*\Z', '', tag)
+    if '/' in tag:
+        return os.path.join(
+            get_studio_home(),
+            'experiments',
+            tag
+        )
+    else:
+        experiment_name = experiment_name if experiment_name else \
+            get_experiment_key()
 
-    experiment_name = experiment_name if experiment_name else \
-        get_experiment_key()
-    retval = os.path.join(
-        get_studio_home(),
-        'experiments',
-        experiment_name,
-        tag
-    )
+        userid = os.environ.get(STUDIOML_USER, 'guest')
 
-    # if not os.path.exists(retval):
-    #    os.makedirs(retval)
-    return retval
+        return os.path.join(
+            get_studio_home(),
+            'experiments',
+            'users',
+            userid,
+            experiment_name + ".data",
+            tag
+        )
 
 
 def get_blob_cache(blobkey):

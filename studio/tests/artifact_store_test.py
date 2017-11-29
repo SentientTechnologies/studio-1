@@ -19,6 +19,7 @@ from studio.auth import remove_all_keys
 
 from studio.gcloud_artifact_store import GCloudArtifactStore
 from studio.s3_artifact_store import S3ArtifactStore
+from studio.local_artifact_store import LocalArtifactStore
 from studio.util import has_aws_credentials
 
 
@@ -111,12 +112,18 @@ class ArtifactStoreTest(object):
         fb.put_artifact(artifact, tmp_filename, cache=False)
         url = fb.get_artifact_url(artifact)
         os.remove(tmp_filename)
-        response = requests.get(url)
-        self.assertEquals(response.status_code, 200)
+        if url.startswith('file://'):
+            with open(url[7:]) as f:
+                data = f.read()
+        else:
+            response = requests.get(url)
+            self.assertEquals(response.status_code, 200)
+            data = response.content
+
         tar_filename = os.path.join(tempfile.gettempdir(),
                                     str(uuid.uuid4()) + '.tgz')
         with open(tar_filename, 'wb') as f:
-            f.write(response.content)
+            f.write(data)
 
         ptar = subprocess.Popen(['tar', '-xf', tar_filename],
                                 cwd=tempfile.gettempdir())
@@ -341,6 +348,16 @@ class S3ArtifactStoreTest(ArtifactStoreTest, unittest.TestCase):
         store = self.get_store()
         endpoint = urlparse(boto3.client('s3')._endpoint.host)
         return "s3://" + endpoint.netloc + "/" + store.bucket + "/"
+
+
+class LocalArtifactStoreTest(ArtifactStoreTest, unittest.TestCase):
+
+    def get_store(self, config_name=None):
+        return LocalArtifactStore('.localstore_test')
+
+    def get_qualified_location_prefix(self):
+        return "file://" + \
+            os.path.abspath(os.path.dirname(__file__)) + "/.localstore_test/"
 
 
 if __name__ == "__main__":

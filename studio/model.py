@@ -17,6 +17,7 @@ from .http_provider import HTTPProvider
 from .firebase_provider import FirebaseProvider
 from .s3_provider import S3Provider
 from .gs_provider import GSProvider
+from .local_files_provider import LocalFilesProvider
 
 logging.basicConfig()
 
@@ -100,6 +101,10 @@ def get_db_provider(config=None, blocking_auth=True):
                           verbose=verbose,
                           store=artifact_store,
                           blocking_auth=blocking_auth)
+    elif db_config['type'].lower() == 'local_files':
+        return LocalFilesProvider(db_config,
+                                  verbose=verbose,
+                                  blocking_auth=blocking_auth)
 
     else:
         raise ValueError('Unknown type of the database ' + db_config['type'])
