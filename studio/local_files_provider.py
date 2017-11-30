@@ -28,12 +28,21 @@ class LocalFilesProvider(StorageProvider):
     @timeit
     def _get(self, key, shallow=False):
         path = os.path.join(self.folder, key)
+        if not os.path.exists(path):
+            return None
+
         if os.path.isfile(path):
             with open(path) as f:
                 data = json.loads(f.read())
             return data
         elif os.path.isdir(path) and shallow:
-            return os.listdir(path)
+            def slash_folders(x):
+                if os.path.isdir(os.path.join(path, x)):
+                    return x + '/' 
+                else:
+                    return x
+
+            return [slash_folders(x) for x in os.listdir(path)]
         else:
             raise NotImplementedError
 

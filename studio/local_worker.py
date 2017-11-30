@@ -57,8 +57,10 @@ class LocalExecutor(object):
                     if v is not None:
                         env[str(k)] = str(v)
 
-            fs_tracker.setup_experiment(env, experiment, clean=True)
-            log_path = fs_tracker.get_artifact_cache('output', experiment.key)
+            fs_tracker.setup_experiment(
+                env, experiment, clean=True, userid=db._get_userid())
+            log_path = fs_tracker.get_artifact_cache(
+                'output', experiment.key, userid=db._get_userid())
 
             # log_path = os.path.join(model_dir, self.config['log']['name'])
 
@@ -126,7 +128,7 @@ class LocalExecutor(object):
                     minutes=minutes)
 
                 metrics_path = fs_tracker.get_artifact_cache(
-                    '_metrics', experiment.key)
+                    '_metrics', experiment.key, userid=db._get_userid())
 
                 minutes = 0
                 if self.config.get('saveMetricsFrequency'):

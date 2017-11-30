@@ -27,7 +27,7 @@ def get_studio_home():
         return os.path.join(os.path.expanduser('~'), '.studioml')
 
 
-def setup_experiment(env, experiment, clean=True):
+def setup_experiment(env, experiment, clean=True, userid=None):
     if not isinstance(experiment, str):
         key = experiment.key
         artifacts = experiment.artifacts
@@ -36,10 +36,13 @@ def setup_experiment(env, experiment, clean=True):
         artifacts = {}
 
     env[STUDIOML_EXPERIMENT] = key
-    _setup_model_directory(key, clean)
+    _setup_model_directory(key, clean, userid=userid)
 
     artifact_mapping_path = _get_artifact_mapping_path(key)
     env[STUDIOML_ARTIFACT_MAPPING] = artifact_mapping_path
+
+    if userid:
+        env[STUDIOML_USER] = userid
 
     amapping = {}
     for tag, art in six.iteritems(artifacts):
@@ -77,11 +80,11 @@ def get_artifacts():
         return {}
 
 
-def get_model_directory(experiment_name=None):
-    return get_artifact_cache('modeldir', experiment_name)
+def get_model_directory(experiment_name=None, userid=None):
+    return get_artifact_cache('modeldir', experiment_name, userid=userid)
 
 
-def get_artifact_cache(tag, experiment_name=None):
+def get_artifact_cache(tag, experiment_name=None, userid=None):
     assert tag is not None
 
     '''
@@ -106,7 +109,8 @@ def get_artifact_cache(tag, experiment_name=None):
         experiment_name = experiment_name if experiment_name else \
             get_experiment_key()
 
-        userid = os.environ.get(STUDIOML_USER, 'guest')
+        if not userid:
+            userid = os.environ.get(STUDIOML_USER, 'guest')
 
         return os.path.join(
             get_studio_home(),
@@ -149,8 +153,8 @@ def _get_artifact_mapping_path(experiment_name=None):
     return os.path.join(basepath, 'artifacts.json')
 
 
-def _setup_model_directory(experiment_name, clean=False):
-    path = get_model_directory(experiment_name)
+def _setup_model_directory(experiment_name, clean=False, userid=None):
+    path = get_model_directory(experiment_name, userid=userid)
     if clean and os.path.exists(path):
         shutil.rmtree(path)
 

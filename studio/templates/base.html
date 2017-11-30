@@ -202,12 +202,28 @@
                     return;
                 }
                 key = experimentKeys[keyIndex]
-                console.log("experiment key = " + key);
-                data_ajax('get_experiment', data={"key":key, "get_artifact_urls":false}).then((data) => {
-                    updateRow(data);
+                if (key.endsWith('/')) {
+                    newRow = [
+                            key,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                        ]
+                    table.row(keyIndex).data(newRow).draw();
+
                     keyIndex++;
                     updateExperiment();
-                });
+                } else {
+                    console.log("experiment key = " + key);
+                    data_ajax('get_experiment', data={"key":key, "get_artifact_urls":false}).then((data) => {
+                        updateRow(data);
+                        keyIndex++;
+                        updateExperiment();
+                    });
+                }
             }
 
             function updateRow(data) {

@@ -161,15 +161,19 @@ class StorageProvider(KeyValueProvider):
     def can_read(self, path, user=None):
         return True
 
+
     def browse(self, path):
         data = self._get(path, shallow=True)
-        return data
+        if data is None:
+            return []
 
-    def __enter__(self):
-        return self
+        filtered_data = [entry for entry in data
+            if not entry.endswith('.data/') and
+               not entry.endswith('.email') and 
+               not entry.endswith('.acl') and 
+               not entry.endswith('.meta')]
 
-    def __exit__(self, *args):
-        if self.app:
-            self.app.requests.close()
-        if self.store:
-            self.store.__exit__()
+
+        return filtered_data
+
+

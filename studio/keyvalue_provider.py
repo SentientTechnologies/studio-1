@@ -421,6 +421,9 @@ class KeyValueProvider(object):
 
     def browse(self, path):
         data = self._get(path, shallow=True)
+        if data is None:
+            return []
+
         return data
 
     def register_user(self, userid, email):
