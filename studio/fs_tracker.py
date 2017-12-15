@@ -75,7 +75,7 @@ def get_artifacts():
                     for art in artifacts}
     except BaseException:
 	traceback.print_exc()
-        return {}
+      	return {}
 
 
 def get_model_directory(experiment_name=None):
