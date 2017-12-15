@@ -249,6 +249,7 @@ def worker_loop(queue, parsed_args,
         first_exp, ack_key = msg
 
         data_dict = json.loads(sixdecode(first_exp))
+	logger.debug("Received message: \n {}".format(data_dict))
         experiment_key = data_dict['experiment']['key']
         config = data_dict['config']
 

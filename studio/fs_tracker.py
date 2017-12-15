@@ -6,6 +6,7 @@ import shutil
 import json
 import re
 import six
+import traceback
 
 STUDIOML_EXPERIMENT = 'STUDIOML_EXPERIMENT'
 STUDIOML_HOME = 'STUDIOML_HOME'
@@ -73,6 +74,7 @@ def get_artifacts():
             return {art: os.path.join(os.getcwd(), '..', art)
                     for art in artifacts}
     except BaseException:
+	traceback.print_exc()
         return {}
 
 
