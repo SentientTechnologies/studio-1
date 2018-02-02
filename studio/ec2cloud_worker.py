@@ -42,7 +42,7 @@ _instance_specs = {
         'ram': '30g',
         'gpus': 0
     },
-    'p2.xlarge': {
+    'p3.2xlarge': {
         'cpus': 4,
         'ram': '61g',
         'gpus': 1
@@ -146,7 +146,7 @@ class EC2WorkerManager(object):
             'MaxCount': 1,
             'MinCount': 1,
             'UserData': startup_script,
-            'InstanceInitiatedShutdownBehavior': 'terminate',
+            'InstanceInitiatedShutdownBehavior': 'stop',
             'TagSpecifications': [{
                 'ResourceType': 'instance',
                 'Tags': [
@@ -373,7 +373,7 @@ class EC2WorkerManager(object):
             "MaxSize": max_workers,
             "DesiredCapacity": int(start_workers),
             "LoadBalancerNames": [],
-            "AvailabilityZones": [self.region + "a"],
+            "AvailabilityZones": [self.region + "b"],
             "TerminationPolicies": ['NewestInstance'],
             "DefaultCooldown": 0,
             "NewInstancesProtectedFromScaleIn": True
